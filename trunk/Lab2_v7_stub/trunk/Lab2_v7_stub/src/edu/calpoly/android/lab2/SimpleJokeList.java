@@ -80,7 +80,6 @@ public class SimpleJokeList extends Activity {
                 ViewGroup.LayoutParams.WRAP_CONTENT));
         m_vwJokeEditText.setHint(R.string.add_joke_hint);
         m_vwJokeEditText.setMaxLines(1);
-        m_vwJokeEditText.setMaxEms(4);
 
         LinearLayout addJokePanel = new LinearLayout(this);
         addJokePanel.setOrientation(LinearLayout.HORIZONTAL);
