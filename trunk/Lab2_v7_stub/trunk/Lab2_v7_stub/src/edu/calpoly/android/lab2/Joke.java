@@ -28,7 +28,7 @@ public class Joke {
      * UNRATED.
      */
     public Joke() {
-        m_nRating = 0;
+        m_nRating = UNRATED;
         m_strJoke = "";
     }
 
@@ -40,7 +40,7 @@ public class Joke {
      *                joke.
      */
     public Joke(String strJoke) {
-        m_nRating = 0;
+        m_nRating = UNRATED;
         m_strJoke = strJoke;
     }
 
@@ -52,7 +52,10 @@ public class Joke {
      * @param nRating Rating value to initialize the rating of this joke.
      */
     public Joke(String strJoke, int nRating) {
-        m_nRating = nRating;
+        if (nRating == DISLIKE || nRating == LIKE)
+            m_nRating = nRating;
+        else
+            m_nRating = UNRATED;
         m_strJoke = strJoke;
     }
 
