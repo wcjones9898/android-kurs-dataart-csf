@@ -6,10 +6,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.TypedValue;
-import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 
@@ -53,6 +50,8 @@ public class AdvancedJokeList extends Activity {
 	 */
 	protected int m_nDarkColor;
 	protected int m_nLightColor;
+
+    protected ArrayList<Joke> filteredJokeList;
 		
 	/**
 	 * Context-Menu MenuItem ID's
@@ -69,11 +68,12 @@ public class AdvancedJokeList extends Activity {
         
         m_strAuthorName = this.getResources().getString(R.string.author_name);
         m_arrJokeList = new ArrayList<Joke>();
+        filteredJokeList = new ArrayList<Joke>();
         m_nDarkColor = this.getResources().getColor(R.color.dark);
         m_nLightColor = this.getResources().getColor(R.color.light);
         m_jokeAdapter = new JokeListAdapter(this, m_arrJokeList);
         m_vwJokeLayout.setAdapter(m_jokeAdapter);
-
+        m_vwJokeLayout.setOnItemLongClickListener(m_jokeAdapter);
 
         String[] jokes = this.getResources().getStringArray(R.array.jokeList);
         if (jokes != null && jokes.length > 0) {
@@ -94,6 +94,7 @@ public class AdvancedJokeList extends Activity {
 
         m_vwJokeButton = (Button) findViewById(R.id.addJokeButton);
         m_vwJokeLayout = (ListView) findViewById(R.id.jokeListViewGroup);
+        registerForContextMenu(m_vwJokeLayout);
         m_vwJokeLayout.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         m_vwJokeEditText = (EditText) findViewById(R.id.newJokeEditText);
         m_vwJokeEditText.setMaxLines(1);
@@ -150,6 +151,59 @@ public class AdvancedJokeList extends Activity {
 	protected void addJoke(Joke joke) {
         m_arrJokeList.add(joke);
         m_jokeAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuItem menuItem = menu.add(0, REMOVE_JOKE_MENUITEM, 0, R.string.remove_menuitem);
+        menuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+
+            public boolean onMenuItemClick(MenuItem item) {
+//                if(menuItem == item) {
+                    m_arrJokeList.remove(m_jokeAdapter.getSelectedPosition());
+                    m_jokeAdapter.notifyDataSetChanged();
+                    return true;
+//                }
+//                return false;
+            }
+        });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.dislike_menuitem:
+                applyFilter(Joke.DISLIKE);
+                return true;
+            case R.id.like_menuitem:
+                applyFilter(Joke.LIKE);
+                return true;
+            case R.id.unrated_menuitem:
+                applyFilter(Joke.UNRATED);
+                return true;
+            case R.id.show_all_menuitem:
+                m_vwJokeLayout.setAdapter(m_jokeAdapter);
+                m_jokeAdapter.notifyDataSetChanged();
+                return true;
+        }
+        return false;
+    }
+
+    public void applyFilter(int param) {
+        filteredJokeList.clear();
+        for (Joke joke : m_arrJokeList)
+            if (joke.getRating() == param)
+                filteredJokeList.add(joke);
+        JokeListAdapter adapter = new JokeListAdapter(this, filteredJokeList);
+        m_vwJokeLayout.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
     }
 
 	/**
