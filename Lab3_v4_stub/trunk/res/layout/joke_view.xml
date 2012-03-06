@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Note: You must use the following id's for this list of UI Components defined in
+	  JokeView.java
+	  	UI Component 					Required Resource ID
+	  	....................................................
+	    Button m_vwExpandButton: 		"expandButton"
+		RadioButton m_vwLikeButton: 	"likeButton"
+		RadioButton m_vwDislikeButton: 	"dislikeButton"
+		RadioGroup m_vwLikeGroup: 		"ratingRadioGroup"
+		TextView m_vwJokeText: 			"jokeTextView"
+-->
+
+<!--
+	 This Root element is only here as a place holder to prevent compilation
+     errors. Feel free to remove it and replace it with whatever you like.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_height="wrap_content"
+              android:orientation="vertical"
+              android:layout_width="fill_parent">
+    <LinearLayout
+            android:layout_height="fill_parent"
+            android:orientation="horizontal"
+            android:layout_width="fill_parent">
+        <Button
+                android:focusable="false"
+                android:id="@+id/expandButton"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"/>
+        <TextView
+                android:id="@+id/jokeTextView"
+                android:layout_gravity="fill_vertical"
+                android:layout_height="wrap_content"
+                android:layout_width="fill_parent"/>
+    </LinearLayout>
+    <RadioGroup
+            android:id="@+id/ratingRadioGroup"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_gravity="center">
+        <RadioButton
+                android:id="@+id/likeButton"
+                android:focusable="false"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="50px"
+                android:text="@string/like_button_text"
+                android:layout_width="wrap_content"/>
+        <RadioButton
+                android:id="@+id/dislikeButton"
+                android:focusable="false"
+                android:layout_height="wrap_content"
+                android:text="@string/dislike_button_text"
+                android:layout_width="wrap_content"/>
+    </RadioGroup>
+</LinearLayout>
