@@ -31,7 +31,7 @@ public class Joke {
 	 */
 	public Joke() {
 		m_strJoke = "";
-        m_nRating = 0;
+        m_nRating = UNRATED;
         m_strAuthorName = "";
 	}
 
@@ -48,7 +48,7 @@ public class Joke {
 	public Joke(String strJoke, String strAuthor) {
 		m_strAuthorName = strAuthor;
         m_strJoke = strJoke;
-        m_nRating = 0;
+        m_nRating = UNRATED;
 	}
 
 	/**

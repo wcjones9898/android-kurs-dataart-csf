@@ -9,7 +9,7 @@ import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 
-public class JokeListAdapter extends BaseAdapter {
+public class JokeListAdapter extends BaseAdapter implements AdapterView.OnItemLongClickListener {
 
 	/**
 	 * The application Context in which this JokeListAdapter is being used.
@@ -79,5 +79,11 @@ public class JokeListAdapter extends BaseAdapter {
         } else {
             return new JokeView(m_context, (Joke) getItem(i));
         }
+    }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+        m_nSelectedPosition = i;
+        return false;
     }
 }
