@@ -147,6 +147,6 @@ public class Joke {
      */
     @Override
     public boolean equals(Object obj) {
-        return this.getClass() == obj.getClass() && m_strJoke.equals(((Joke) obj).getJoke()) && m_strAuthorName.equals(((Joke) obj).getAuthor());
+        return obj != null && this.getClass() == obj.getClass() && m_strJoke.equals(((Joke) obj).getJoke()) && m_strAuthorName.equals(((Joke) obj).getAuthor());
     }
 }
