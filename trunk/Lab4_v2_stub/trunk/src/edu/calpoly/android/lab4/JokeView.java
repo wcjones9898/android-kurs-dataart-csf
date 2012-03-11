@@ -55,7 +55,9 @@ public class JokeView extends RelativeLayout implements OnClickListener, OnCheck
 		m_vwDislikeButton = (RadioButton)findViewById(R.id.dislikeButton);
 		
 		m_vwJokeText= (TextView)findViewById(R.id.jokeTextView);
-		
+
+        m_onJokeChangeListener = null;
+
 		setJoke(joke);
 		
 		collapseJokeView();
@@ -174,7 +176,7 @@ public class JokeView extends RelativeLayout implements OnClickListener, OnCheck
 	 *            the underlying Joke changes state.
 	 */
 	public void setOnJokeChangeListener(OnJokeChangeListener listener) {
-		// TODO
+        m_onJokeChangeListener = listener;
 	}
 
 	/**
@@ -189,7 +191,8 @@ public class JokeView extends RelativeLayout implements OnClickListener, OnCheck
 	 * different Joke object.
 	 */
 	protected void notifyOnJokeChangeListener() {
-		// TODO
+        if (m_onJokeChangeListener != null)
+		    m_onJokeChangeListener.onJokeChanged(this, m_joke);
 	}
 
 	/**
