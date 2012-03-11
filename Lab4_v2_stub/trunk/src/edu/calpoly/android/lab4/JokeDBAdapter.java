@@ -64,21 +64,21 @@ public class JokeDBAdapter {
 	 * 			  used.
 	 */
 	public JokeDBAdapter(Context context) {
-		// TODO
+        m_dbHelper = new JokeDBHelper(context, JokeDBAdapter.DATABASE_NAME, null, JokeDBAdapter.DATABASE_VERSION);
 	}
 	
 	/**
 	 * Initializes the underlying SQLiteDatabase object for Writable access.
 	 */
 	public void open() {
-		// TODO
+        m_db = m_dbHelper.getWritableDatabase();
 	}
 	
 	/**
 	 * Closes the underlying SQLiteDatabse object.
 	 */
 	public void close() {
-		// TODO
+		m_db.close();
 	}
 	
 	/**
@@ -91,8 +91,12 @@ public class JokeDBAdapter {
 	 * 		   occurred.
 	 */
 	public long insertJoke(Joke joke) {
-		// TODO
-		return 0;
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(JokeDBAdapter.JOKE_KEY_TEXT, joke.getJoke());
+        contentValues.put(JokeDBAdapter.JOKE_KEY_AUTHOR, joke.getJoke());
+        contentValues.put(JokeDBAdapter.JOKE_KEY_RATING, joke.getRating());
+
+        return m_db.insert(JokeDBAdapter.DATABASE_TABLE_JOKE, null, contentValues);
 	}
 	
 	/**
@@ -111,8 +115,12 @@ public class JokeDBAdapter {
 	 * 		   matches ratingFilter, or all rows if ratingFilter is null. 
 	 */
 	public Cursor getAllJokes(String ratingFilter) {
-		// TODO
-		return null;
+        String filter;
+		if (ratingFilter == null) filter = null;
+        else filter = JOKE_KEY_RATING + "=" + ratingFilter;
+
+        return m_db.query(DATABASE_TABLE_JOKE,
+                new String[]{JOKE_KEY_ID, JOKE_KEY_TEXT, JOKE_KEY_RATING, JOKE_KEY_AUTHOR}, filter, null, null, null, null);
 	}
 	
 	/**
@@ -121,8 +129,7 @@ public class JokeDBAdapter {
 	 * @return A Cursor containing all rows in the Database Joke Table.
 	 */
 	public Cursor getAllJokes() {
-		// TODO
-		return null;
+		return getAllJokes(null);
 	}
 	
 	/**
@@ -138,8 +145,20 @@ public class JokeDBAdapter {
 	 * 		   object passed in, or null if the Cursor is empty or null.
 	 */
 	public static Joke getJokeFromCursor(Cursor cursor) {
-		// TODO
-		return null;
+//        JOKE_COL_ID, JOKE_COL_TEXT, JOKE_COL_AUTHOR, JOKE_COL_RATING
+        if (cursor != null) {
+            Joke joke = new Joke();
+            if (!cursor.isNull(JOKE_COL_ID))
+                joke.setID(cursor.getLong(JOKE_COL_ID));
+            if (!cursor.isNull(JOKE_COL_AUTHOR))
+                joke.setAuthor(cursor.getString(JOKE_COL_AUTHOR));
+            if (!cursor.isNull(JOKE_COL_RATING))
+                joke.setRating(cursor.getInt(JOKE_COL_RATING));
+            if (!cursor.isNull(JOKE_COL_TEXT))
+                joke.setJoke(cursor.getString(JOKE_COL_TEXT));
+            return joke;
+        }
+        return null;
 	}
 	
 	/**
@@ -154,9 +173,13 @@ public class JokeDBAdapter {
 	 * 		   whose _id matches the "id" parameter. 
 	 */
 	public Joke getJoke(long id) {
-		// TODO
-		return null;
-	}	
+        String filter = JOKE_KEY_ID + "=" + id;
+
+        Cursor cursor = m_db.query(DATABASE_TABLE_JOKE,
+                new String[]{JOKE_KEY_ID, JOKE_KEY_TEXT, JOKE_KEY_RATING, JOKE_KEY_AUTHOR}, filter, null, null, null, null);
+        cursor.moveToNext();
+        return getJokeFromCursor(cursor);
+	}
 	
 	/**
 	 * Removes a Joke object from the Database.
@@ -167,8 +190,10 @@ public class JokeDBAdapter {
 	 * @return True if a row in the database with an _id equaling 'id' was 
 	 * 		   found and removed; False otherwise. 
 	 */
-	public boolean removeJoke(long id) {		
-		// TODO
+	public boolean removeJoke(long id) {
+        String filter = JOKE_KEY_ID + "=" + id;
+
+		m_db.delete(DATABASE_TABLE_JOKE, filter, null);
 		return false;
 	}
 	
@@ -184,8 +209,14 @@ public class JokeDBAdapter {
 	 * 
 	 */
 	public boolean updateJoke(Joke joke) {
-		// TODO
-		return false;
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(JokeDBAdapter.JOKE_KEY_TEXT, joke.getJoke());
+        contentValues.put(JokeDBAdapter.JOKE_KEY_AUTHOR, joke.getJoke());
+        contentValues.put(JokeDBAdapter.JOKE_KEY_RATING, joke.getRating());
+
+        String filter = JOKE_KEY_ID + "=" + joke.getID();
+
+        return m_db.update(JokeDBAdapter.DATABASE_TABLE_JOKE, contentValues, filter, null) > 0;
 	}
 
 	/**
@@ -207,8 +238,8 @@ public class JokeDBAdapter {
 		 */
 		@Override
 		public void onCreate(SQLiteDatabase _db) {
-			// TODO
-		}
+            _db.execSQL(DATABASE_CREATE);
+        }
 
 		/**
 		 * Called when the Constructor is called with a version number that 
@@ -221,7 +252,8 @@ public class JokeDBAdapter {
 		 */
 		@Override
 		public void onUpgrade(SQLiteDatabase _db, int _oldVersion, int _newVersion) {
-			// TODO
+            _db.execSQL(DATABASE_DROP);
+            onCreate(_db);
 		}
 
 	}
