@@ -11,6 +11,7 @@ import java.util.Scanner;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -28,6 +29,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
+import android.util.Log;
 
 public class AdvancedJokeList extends Activity implements OnMenuItemClickListener  {
 
@@ -68,7 +70,7 @@ public class AdvancedJokeList extends Activity implements OnMenuItemClickListene
 	 * Value used to filter which jokes get displayed to the user.
 	 */
 	protected int m_nFilter;
-	
+
 	/**
 	 * Filter Options Submenu constants
 	 */
@@ -77,24 +79,24 @@ public class AdvancedJokeList extends Activity implements OnMenuItemClickListene
 	protected static final int DISLIKE = Menu.FIRST + 2;
 	protected static final int UNRATED = Menu.FIRST + 3;
 	protected static final int SHOW_ALL = Menu.FIRST + 4;
-	
+
 	/**
-	 * Filter Options Submenu	
+	 * Filter Options Submenu
 	 */
 	protected SubMenu m_vwFilterSubMenu;
 
 	/**
-	 * Key used for storing and retrieving the value of m_nFilter in 
+	 * Key used for storing and retrieving the value of m_nFilter in
 	 * savedInstanceState.
 	 */
 	protected static final String SAVED_FILTER_VALUE = "m_nFilter";
 
 	/**
-	 * Key used for storing and retrieving the text in m_vwJokeEditText in 
+	 * Key used for storing and retrieving the text in m_vwJokeEditText in
 	 * savedInstanceState.
 	 */
 	protected static final String SAVED_EDIT_TEXT = "m_vwJokeEditText";
-	
+
 	/**
 	 * Database of Jokes the user can view, add to, and remove from.
 	 */
@@ -107,6 +109,8 @@ public class AdvancedJokeList extends Activity implements OnMenuItemClickListene
 		// Initialize the ContentView
 		initLayout();
 
+        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+        m_vwJokeEditText.setText(sharedPreferences.getString(SAVED_EDIT_TEXT, ""));
 		// Initialize Author Name
 		Resources res = getResources();
 		m_strAuthorName = res.getString(R.string.author_name);
@@ -150,7 +154,7 @@ public class AdvancedJokeList extends Activity implements OnMenuItemClickListene
 		m_vwJokeButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				String jokeText = m_vwJokeEditText.getText().toString(); 
+				String jokeText = m_vwJokeEditText.getText().toString();
 				if (!jokeText.equals("")) {
 					addJoke(new Joke(jokeText, m_strAuthorName));
 					m_vwJokeEditText.setText("");
@@ -161,8 +165,8 @@ public class AdvancedJokeList extends Activity implements OnMenuItemClickListene
 			@Override
 			public boolean onKey(View view, int keyCode, KeyEvent event) {
 				String jokeText = m_vwJokeEditText.getText().toString();
-				if (!jokeText.equals("") && event.getAction() == KeyEvent.ACTION_DOWN && 
-				 (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER)) { 
+				if (!jokeText.equals("") && event.getAction() == KeyEvent.ACTION_DOWN &&
+				 (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER)) {
 					addJoke(new Joke(jokeText ,m_strAuthorName));
 					m_vwJokeEditText.setText("");
 					return true;
@@ -180,7 +184,7 @@ public class AdvancedJokeList extends Activity implements OnMenuItemClickListene
 	/**
 	 * Method used for encapsulating the logic necessary to properly add a new
 	 * Joke to m_arrJokeList, and display it on screen.
-	 * 
+	 *
 	 * @param joke
 	 *            The Joke to add to list of Jokes.
 	 */
@@ -219,17 +223,17 @@ public class AdvancedJokeList extends Activity implements OnMenuItemClickListene
 	 * This method uploads a single Joke to the server. This method should test
 	 * the response from the server and display success or failure to the user
 	 * via a Toast Notification.
-	 * 
+	 *
 	 * The addJoke script on the server requires two parameters, both of which
 	 * should be encode in "UTF-8":
-	 * 
+	 *
 	 * 1) "joke": The text of the joke.
-	 * 
+	 *
 	 * 2) "author": The author of the joke.
-	 * 
+	 *
 	 * @param joke
 	 *            The Joke to be uploaded to the server.
-	 * 
+	 *
 	 */
 	protected void uploadJokeToServer(Joke joke) {
 		try {
@@ -311,6 +315,7 @@ public class AdvancedJokeList extends Activity implements OnMenuItemClickListene
 
 		m_vwFilterSubMenu.setGroupCheckable(FILTER_OPTIONS, true, true);
 
+        Log.i("","filter: " +m_nFilter);
 		m_vwFilterSubMenu.findItem(m_nFilter).setChecked(true);
 
 		return true;
@@ -352,22 +357,65 @@ public class AdvancedJokeList extends Activity implements OnMenuItemClickListene
 		m_jokeAdapter.notifyDataSetChanged();
 		return true;
 	}
-	
+
 	/**
-	 * This method sets m_nFilter to the ID of the currently selected Filter 
-	 * MenuItem and updates the m_cursorJokeList to contain only Joke Database 
-	 * Table rows with ratings matching the desired filter value. 
-	 * 
+	 * This method sets m_nFilter to the ID of the currently selected Filter
+	 * MenuItem and updates the m_cursorJokeList to contain only Joke Database
+	 * Table rows with ratings matching the desired filter value.
+	 *
 	 * This method should stop managing and close any unused Cursor objects.
 	 * Additionally it should start managing any new Cursor objects and update
-	 * the JokeCursorAdapter with any new Cursor objects. 
-	 * 
+	 * the JokeCursorAdapter with any new Cursor objects.
+	 *
 	 * @param newFilterVal
 	 * 			  The ID of the filter MenuItem used to determine which jokes
-	 * 			  get displayed. This should be one of four filter MenuItem ID 
-	 * 			  values: LIKE, DISLIKE, SHOW_ALL, or UNRATED. 
+	 * 			  get displayed. This should be one of four filter MenuItem ID
+	 * 			  values: LIKE, DISLIKE, SHOW_ALL, or UNRATED.
 	 */
 	protected void setAndUpdateFilter(int newFilterVal) {
-		// TODO	
+        int rating = -1;
+        if (newFilterVal == LIKE)
+            rating = Joke.LIKE;
+        if (newFilterVal == DISLIKE)
+            rating = Joke.DISLIKE;
+        if (newFilterVal == UNRATED)
+            rating = Joke.UNRATED;
+        if (newFilterVal == SHOW_ALL) {
+            m_arrFilteredJokeList = m_arrJokeList;
+            m_jokeAdapter.notifyDataSetChanged();
+        }
+        if (rating != -1) {
+            m_arrFilteredJokeList.clear();
+            for (Joke joke : m_arrJokeList)
+                if (joke.getRating() == newFilterVal)
+                    m_arrFilteredJokeList.add(joke);
+            m_jokeAdapter.notifyDataSetChanged();
+        }
 	}
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        if (outState != null)
+            outState.putInt(SAVED_FILTER_VALUE, m_nFilter);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState){
+        if (savedInstanceState != null && savedInstanceState.containsKey(SAVED_FILTER_VALUE))
+            m_nFilter = savedInstanceState.getInt(SAVED_FILTER_VALUE);
+        super.onRestoreInstanceState(savedInstanceState);
+        setAndUpdateFilter(m_nFilter);
+    }
+
+    @Override
+    protected void onPause(){
+        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(SAVED_EDIT_TEXT, m_vwJokeEditText.getText().toString())
+              .commit();
+
+        super.onPause();
+    }
+
 }
