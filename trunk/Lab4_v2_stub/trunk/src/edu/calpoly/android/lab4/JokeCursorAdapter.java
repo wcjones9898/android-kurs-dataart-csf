@@ -9,6 +9,8 @@ import android.widget.CursorAdapter;
 import android.widget.AdapterView.OnItemLongClickListener;
 import edu.calpoly.android.lab4.JokeView.OnJokeChangeListener;
 
+
+
 public class JokeCursorAdapter extends CursorAdapter implements OnItemLongClickListener {
 
 	/**
@@ -37,8 +39,9 @@ public class JokeCursorAdapter extends CursorAdapter implements OnItemLongClickL
 	 */
 	public JokeCursorAdapter(Context context, Cursor jokeCursor) {
 		super(context, jokeCursor);
-		
-		// TODO
+
+        m_nSelectedID = NO_SELECTION;
+        m_listener = null;
 	}
 
 	/**
@@ -49,35 +52,35 @@ public class JokeCursorAdapter extends CursorAdapter implements OnItemLongClickL
 	 *         currently selected Joke.
 	 */
 	public long getSelectedID() {
-		// TODO
-		return 0;
+		return m_nSelectedID;
 	}
 
 	/**
-	 * @param listener
-	 *            The OnJokeChangeListener that will be notified when the
-	 *            internal state of any Joke contained in one of this Adapters
-	 *            JokeViews is changed.
-	 */
+     * @param mListener
+     *            The OnJokeChangeListener that will be notified when the
+     *            internal state of any Joke contained in one of this Adapters
+     *            JokeViews is changed.
+     */
 	public void setOnJokeChangeListener(OnJokeChangeListener mListener) {
-		// TODO
+		m_listener = mListener;
 	}
 
 	@Override
 	public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-		// TODO
-		return false;
+        m_nSelectedID = position;
+        return false;
 	}
 
 	@Override
 	public void bindView(View view, Context context, Cursor cursor) {
-		// TODO Auto-generated method stub
-		
+        Joke joke = JokeDBAdapter.getJokeFromCursor(cursor);
+        ((JokeView) view).setOnJokeChangeListener(m_listener);
 	}
 
 	@Override
 	public View newView(Context context, Cursor cursor, ViewGroup parent) {
-		// TODO Auto-generated method stub
-		return null;
+        Joke joke = JokeDBAdapter.getJokeFromCursor(cursor);
+        ((JokeView) parent).setOnJokeChangeListener(m_listener);
+        return parent;
 	}
 }

@@ -6,7 +6,7 @@ package edu.calpoly.android.lab4;
  * 
  */
 
-public class Joke {
+public class Joke implements JokeView.OnJokeChangeListener{
 
 	/** The three possible rating values for jokes **/
 	public static final int UNRATED = 1;
@@ -118,6 +118,7 @@ public class Joke {
 	 */
 	public void setRating(int rating) {
 		m_nRating = rating;
+//        onJokeChanged(,this);
 	}
 
 	/**
@@ -180,5 +181,10 @@ public class Joke {
 	@Override
     public boolean equals(Object obj) {
         return obj != null && this.getClass() == obj.getClass() && m_nID == ((Joke) obj).getID();
+    }
+
+    @Override
+    public void onJokeChanged(JokeView view, Joke joke) {
+        view.notifyOnJokeChangeListener();
     }
 }
