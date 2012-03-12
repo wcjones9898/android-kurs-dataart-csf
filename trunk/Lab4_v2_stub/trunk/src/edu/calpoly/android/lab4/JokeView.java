@@ -82,6 +82,7 @@ public class JokeView extends RelativeLayout implements OnClickListener, OnCheck
 		else {
 			m_vwLikeGroup.clearCheck();
 		}
+        notifyOnJokeChangeListener();
 	}
 
 	/**
@@ -193,6 +194,7 @@ public class JokeView extends RelativeLayout implements OnClickListener, OnCheck
 	protected void notifyOnJokeChangeListener() {
         if (m_onJokeChangeListener != null)
 		    m_onJokeChangeListener.onJokeChanged(this, m_joke);
+
 	}
 
 	/**

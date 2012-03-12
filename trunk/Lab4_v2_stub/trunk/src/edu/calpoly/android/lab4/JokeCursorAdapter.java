@@ -75,12 +75,14 @@ public class JokeCursorAdapter extends CursorAdapter implements OnItemLongClickL
 	public void bindView(View view, Context context, Cursor cursor) {
         Joke joke = JokeDBAdapter.getJokeFromCursor(cursor);
         ((JokeView) view).setOnJokeChangeListener(m_listener);
+
 	}
 
 	@Override
 	public View newView(Context context, Cursor cursor, ViewGroup parent) {
         Joke joke = JokeDBAdapter.getJokeFromCursor(cursor);
-        ((JokeView) parent).setOnJokeChangeListener(m_listener);
-        return parent;
+        JokeView jokeView = new JokeView(context, joke);
+        jokeView.setOnJokeChangeListener(m_listener);
+        return jokeView;
 	}
 }
