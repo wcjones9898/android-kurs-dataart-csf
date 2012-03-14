@@ -1,4 +1,4 @@
-package edu.calpoly.android.lab3;
+package edu.calpoly.android.lab3.tests;
 
 import junit.framework.TestCase;
 import android.test.suitebuilder.annotation.SmallTest;
