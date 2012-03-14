@@ -11,6 +11,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -264,8 +265,9 @@ public class AdvancedJokeList extends Activity {
      */
     protected void uploadJokeToServer(Joke joke) {
         try {
-            URL url = new URL("http://simexusa.com/aac/addOneJoke.php?joke=" + java.net.URLEncoder.encode(joke.getJoke()) +
-                    "&author=" + java.net.URLEncoder.encode(joke.getAuthor()));
+            URL url = new URL("http://simexusa.com/aac/addOneJoke.php?joke=" +
+                    URLEncoder.encode(joke.getJoke(), "UTF-8") +
+                    "&author=" + URLEncoder.encode(joke.getAuthor(), "UTF-8"));
             Scanner scanner = new Scanner(url.openStream());
             scanner.useDelimiter("\n");
             String response = "";
