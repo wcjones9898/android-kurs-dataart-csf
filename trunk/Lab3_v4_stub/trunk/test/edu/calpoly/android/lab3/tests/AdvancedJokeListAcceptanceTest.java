@@ -1,4 +1,4 @@
-package edu.calpoly.android.lab3;
+package edu.calpoly.android.lab3.tests;
 
 import java.util.ArrayList;
 
@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import edu.calpoly.android.lab3.*;
 
 public class AdvancedJokeListAcceptanceTest extends ActivityInstrumentationTestCase2<AdvancedJokeList> {
 

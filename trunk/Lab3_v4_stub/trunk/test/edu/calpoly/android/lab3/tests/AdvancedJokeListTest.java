@@ -1,4 +1,4 @@
-package edu.calpoly.android.lab3;
+package edu.calpoly.android.lab3.tests;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -8,16 +8,15 @@ import android.test.suitebuilder.annotation.SmallTest;
 import android.view.KeyEvent;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RadioButton;
+import android.widget.TextView;
 import edu.calpoly.android.lab3.Joke;
 import edu.calpoly.android.lab3.AdvancedJokeList;
 import edu.calpoly.android.lab3.JokeView;
-import edu.calpoly.android.lab3.R;
 
-public class AdvancedJokeListTest2 extends ActivityInstrumentationTestCase2<AdvancedJokeList> {
-	public AdvancedJokeListTest2() {
+public class AdvancedJokeListTest extends ActivityInstrumentationTestCase2<AdvancedJokeList> {
+	public AdvancedJokeListTest() {
 		super("edu.calpoly.android.lab3", AdvancedJokeList.class);
 	}
 
@@ -43,11 +42,12 @@ public class AdvancedJokeListTest2 extends ActivityInstrumentationTestCase2<Adva
 		ListView m_vwJokeLayout = null;
 		m_vwJokeLayout = this.retrieveHiddenMember("m_vwJokeLayout",m_vwJokeLayout,getActivity());
 		assertEquals("Should be 4 joke views",4,m_vwJokeLayout.getChildCount());
-		ListAdapter adapter = m_vwJokeLayout.getAdapter();
-		Joke joke = (Joke)adapter.getItem(3);
-		assertEquals("The adapter should also have the new joke","This is a test joke",joke.getJoke());
+		JokeView jv = (JokeView)m_vwJokeLayout.getChildAt(3);
+		TextView tv = null;
+		tv = this.retrieveHiddenMember("m_vwJokeText",tv,jv);	
+		assertEquals("Text view should also have the new joke","This is a test joke",tv.getText());
 	}
-
+	
 	@SmallTest
 	public void testAddJokeViaReturn() {
 		ArrayList<Joke> m_arrJokeList = null;
@@ -66,9 +66,10 @@ public class AdvancedJokeListTest2 extends ActivityInstrumentationTestCase2<Adva
 		ListView m_vwJokeLayout = null;
 		m_vwJokeLayout = this.retrieveHiddenMember("m_vwJokeLayout",m_vwJokeLayout,getActivity());
 		assertEquals("Should be 4 joke views",4,m_vwJokeLayout.getChildCount());
-		ListAdapter adapter = m_vwJokeLayout.getAdapter();
-		Joke joke = (Joke)adapter.getItem(3);
-		assertEquals("The adapter should also have the new joke","This is a second test joke",joke.getJoke());
+		JokeView jv = (JokeView)m_vwJokeLayout.getChildAt(3);
+		TextView tv = null;
+		tv = this.retrieveHiddenMember("m_vwJokeText",tv,jv);	
+		assertEquals("Text view should also have the new joke","This is a second test joke",tv.getText());
 	}
 
 	@SmallTest
@@ -89,10 +90,10 @@ public class AdvancedJokeListTest2 extends ActivityInstrumentationTestCase2<Adva
 		ListView m_vwJokeLayout = null;
 		m_vwJokeLayout = this.retrieveHiddenMember("m_vwJokeLayout",m_vwJokeLayout,getActivity());
 		assertEquals("Should be 4 joke views",4,m_vwJokeLayout.getChildCount());
-		ListAdapter adapter = m_vwJokeLayout.getAdapter();
-		Joke joke = (Joke)adapter.getItem(3);
-		assertEquals("The adapter should also have the new joke","This is a third test joke",joke.getJoke());
-
+		JokeView jv = (JokeView)m_vwJokeLayout.getChildAt(3);
+		TextView tv = null;
+		tv = this.retrieveHiddenMember("m_vwJokeText",tv,jv);	
+		assertEquals("Text view should also have the new joke","This is a third test joke",tv.getText());
 	}
 
 	@SmallTest
@@ -102,65 +103,16 @@ public class AdvancedJokeListTest2 extends ActivityInstrumentationTestCase2<Adva
 		assertEquals("Check Button Text","Add Joke",m_vwJokeButton.getText());
 	}
 
-	/********************/
-	/** JokeView Tests **/
-	/********************/
-	@SmallTest
-	public void testExpandSecondJoke() {
-		ListView m_vwJokeLayout = null;
+/*	@SmallTest
+	public void testTextViewSize() {
+		LinearLayout m_vwJokeLayout = null;
 		m_vwJokeLayout = this.retrieveHiddenMember("m_vwJokeLayout",m_vwJokeLayout,getActivity());
-		ListAdapter adapter = m_vwJokeLayout.getAdapter();
-		JokeView jv = (JokeView)adapter.getView(1, null, null);
-		Button m_vwExpandButton = (Button)jv.findViewById(R.id.expandButton);
-		assertEquals("Check Expand Button"," + ",m_vwExpandButton.getText());
-		jv.toggle();
-		getInstrumentation().waitForIdleSync();
-		assertEquals("Check Collapse Button"," - ",m_vwExpandButton.getText());
-}
+		JokeView jv = (JokeView)m_vwJokeLayout.getChildAt(1);
+		TextView tv = null;
+		tv = this.retrieveHiddenMember("m_vwJokeText",tv,jv);	
+		assertEquals("Check text size",16.0,tv.getTextSize(),.001);
+	}*/
 
-	@SmallTest
-	public void testCheckLike() {
-		ListView m_vwJokeLayout = null;
-		m_vwJokeLayout = this.retrieveHiddenMember("m_vwJokeLayout",m_vwJokeLayout,getActivity());
-		ListAdapter adapter = m_vwJokeLayout.getAdapter();
-		JokeView jv = (JokeView)adapter.getView(0, null, null);
-		Button m_vwExpandButton = (Button)jv.findViewById(R.id.expandButton);
-		assertEquals("Check Expand Button"," + ",m_vwExpandButton.getText());
-		jv.toggle();
-		assertEquals("Check Collapse Button"," - ",m_vwExpandButton.getText());
-
-		final RadioButton m_vwLikeButton = (RadioButton)jv.findViewById(R.id.likeButton);
-		assertFalse("Check Like Unchecked",m_vwLikeButton.isChecked());
-
-		getActivity().runOnUiThread(new Runnable() {
-		public void run() {
-			m_vwLikeButton.performClick();
-		}
-		});
-		getInstrumentation().waitForIdleSync();
-		assertTrue("Check Like Checked",m_vwLikeButton.isChecked());
-
-		//expand second button
-		JokeView jv2 = (JokeView)adapter.getView(1, null, null);
-		Button m_vwExpandButton2 = (Button)jv2.findViewById(R.id.expandButton);
-		assertEquals("Check Expand Button"," + ",m_vwExpandButton2.getText());
-		jv2.toggle();
-		assertEquals("Check Collapse Second Button"," - ",m_vwExpandButton2.getText());
-
-		final RadioButton m_vwDislikeButton2 = (RadioButton)jv2.findViewById(R.id.dislikeButton);
-		assertFalse("Check Dislike Unchecked",m_vwDislikeButton2.isChecked());
-
-		getActivity().runOnUiThread(new Runnable() {
-		public void run() {
-			m_vwDislikeButton2.performClick();
-		}
-		});
-		getInstrumentation().waitForIdleSync();
-		assertTrue("Check Dislike Checked",m_vwDislikeButton2.isChecked());
-		jv.toggle();
-		assertTrue("Check Like Checked",m_vwLikeButton.isChecked());
-		assertTrue("Check Dislike Checked",m_vwDislikeButton2.isChecked());
-}
 	/*************************************/
 	/**	Java Friend-Class Helper Method **/
 	/*************************************/
